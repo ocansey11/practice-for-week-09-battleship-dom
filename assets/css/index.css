@@ -1,1 +1,60 @@
 /* Your code here */
+body {
+  position: relative;
+  text-align: center;
+}
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.battlefield {
+  position: relative;
+  margin: auto;
+  width: fit-content;
+}
+.grid-row {
+  display: flex;
+  padding: 1px;
+  width: fit-content;
+}
+.grid-col {
+  border: 1px solid black;
+  width: 70px;
+  height: 70px;
+  margin: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.makeHit {
+  background-color: green;
+  text-align: center;
+  font-size: 40px;
+}
+.makeMiss {
+  background-color: red;
+  text-align: center;
+  font-size: 40px;
+}
+.hide {
+  display: none;
+}
+.alertBox {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  bottom: 50%;
+  left: 45%;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: aliceblue;
+}
+
+.ok-btn {
+  background-color: greenyellow;
+}
+
+.reset {
+  background-color: brown;
+}

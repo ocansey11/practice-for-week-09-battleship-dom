@@ -1,92 +1,135 @@
 import Board from "./board.js";
+import HumanBoard from "./human.js";
 
 let board = new Board(); // creates a new game board
-
-// Examine the grid of the game board in the browser console.
-// Create the UI of the game using HTML elements based on this grid.
-// console.log(board.grid, board.grid[0]);
+let humanBoard = new HumanBoard(); //creates a new game for human interactivity board
 
 window.addEventListener(`DOMContentLoaded`, (event) => {
+  //Declaring classes and Ids
+  //Com appended to anything means computer
   let battlefield = document.querySelector(".battlefield");
   let grid = board.grid;
-  let tries = document.getElementById("noTries");
+  let noShipsLeft = document.getElementById("noShipsLeft");
   let alertBox = document.querySelector(".alertBox");
   let resetBtn = document.getElementById("resetBtn");
   let resetBtn_gameover = document.querySelector(".resetBtn-gameOver");
+  let start = document.querySelector("start");
 
-  // resetBtn.style.display = "none";
+  //the battlefieldCom refers to the board the computer will be interacting with. the Humans Board
+  let battlefieldCom = document.querySelector(".battlefield-com");
+  let gridCom = humanBoard.grid;
+  let noShipsLeftCom = document.getElementById("noShipsLeft-com");
+  let startCom = document.querySelector("startCom");
+  let moveTracker = [];
+  let possibleMoves = [];
+  let turn = true;
 
   //Function Load Game. to load and reset grid using values from board
+  //Now we have to load the battlefieldCom (Humans board here too)
   function loadGame() {
     for (let r = 0; r < 9; r++) {
+      //I need to load the grid for both Human Board and Computer Board
+      //Things to note. Human Board is also what i refer to as 'BattlefiedCom'.
+      //and the normal board (the computers board) is the 'battlefield'
+
       let row = document.createElement("div");
+      let rowHuman = document.createElement("div");
+
       row.setAttribute("data-id", `bfield${r}`);
       row.classList.add("grid-row");
 
+      rowHuman.setAttribute("data-id", `bfieldCom${r}`);
+      rowHuman.classList.add("grid-row");
+
       for (let c = 0; c < 9; c++) {
         let col = document.createElement("div");
-        col.setAttribute("data-id", `${r}${c}`);
+        let colHuman = document.createElement("div");
+
         col.id = `${r}${c}`;
         col.classList.add("grid-col");
+        //put all generated cells into possibleMoves
+        possibleMoves.push(col.id);
+
+        colHuman.id = `${r}${c}+`; //humanBoard cells
+        colHuman.classList.add("grid-col");
 
         row.appendChild(col);
+        rowHuman.appendChild(colHuman);
       }
 
       // Append the row to the battlefield
       battlefield.appendChild(row);
+      battlefieldCom.appendChild(rowHuman);
     }
-    console.log(battlefield);
   }
 
-  //function Make Hit. to add color effect to grid cells via classLists
-  function makeHit(row, col) {
-    if (grid[row][col] !== null) {
-      return true;
-    }
-    return false;
-  }
-
-  //Function Extract Cell. Triggered on event and calls the makeHit method of the board class getting the game closer to game over state
+  //Function Extract Cell. When i click on a either grids human board or board. I want to capture the cell value. if null its a miss.
+  //if theres a ship [2,3,4,5] its a hit
+  //human board has plus (+) sign at the end of the row-col pair value.
   function extractCell(event) {
     let cellLoc = event.target.attributes[0].value;
+
+    // depending on how many strings the CellLoc have we can distinguish between battlefieldCom(human board) and battlefield(board)
+    //battlefieldCom has 3 strings. the row the col and an extra + string. while battlefield has just row and col
     let row = cellLoc[0];
     let col = cellLoc[1];
+    let comChecker = cellLoc[2];
+
     let cellElement = document.getElementById(`${cellLoc}`);
 
-    let hit = makeHit(row, col);
+    if (comChecker === "+") {
+      if (gridCom[row][col] !== null) {
+        event.target.classList.add("makeHit");
+        cellElement.innerText = humanBoard.makeHit(row, col);
+        noShipsLeftCom.innerText = `Number of Ships remaining: ${humanBoard.numRemaining}`;
 
-    if (hit) {
-      event.target.classList.add("makeHit");
-      cellElement.innerText = board.makeHit(row, col);
-      tries.innerText = `Number of tries remaining: ${board.numRemaining}`;
-
-      if (board.isGameOver()) {
-        alertBox.style.display = "block";
-        battlefield.removeEventListener("click", extractCell);
+        //Will have to change this part to Human wins
+        if (humanBoard.isGameOver()) {
+          alertBox.style.display = "block";
+          battlefieldCom.removeEventListener("click", extractCell);
+        }
+      } else {
+        event.target.classList.add("makeMiss");
+        cellElement.innerText = "ha!";
       }
-    } else {
-      event.target.classList.add("makeMiss");
-      cellElement.innerText = "ha!";
     }
 
-    // Check to see if Game is Over
+    if (comChecker === undefined) {
+      if (grid[row][col] !== null) {
+        event.target.classList.add("makeHit");
+        cellElement.innerText = board.makeHit(row, col);
+        noShipsLeft.innerText = `Number of Ships remaining: ${board.numRemaining}`;
+
+        if (board.isGameOver()) {
+          alertBox.style.display = "block";
+          battlefield.removeEventListener("click", extractCell);
+        }
+      } else {
+        event.target.classList.add("makeMiss");
+        cellElement.innerText = "ha!";
+      }
+    }
+  }
+
+  function computerMoves() {
+    let move = possibleMoves[Math.floor(Math.random() * 81)];
+    // let move = possibleMoves[moveId];
+    moveTracker.push(move);
   }
 
   function resetGame() {
-    battlefield.innerHTML = "";
-    board = new Board();
-    grid = board.grid;
-    loadGame();
-    battlefield.addEventListener("click", extractCell);
-    tries.innerText = `Number of tries remaining: ${board.numRemaining}`;
-    alertBox.style.display = "none";
+    location.reload();
   }
 
   //Calling the functions and eevent listeners
-
   resetBtn.addEventListener("click", resetGame);
   battlefield.addEventListener("click", extractCell);
+  // battlefieldCom.addEventListener("click", extractCell);
 
   loadGame();
-  tries.innerText = `Number of tries remaining: ${board.numRemaining}`;
+  noShipsLeft.innerText = `Number of ships remaining: ${board.numRemaining}`;
+  noShipsLeftCom.innerText = `Number of Ships remaining: ${humanBoard.numRemaining}`;
+  resetBtn_gameover.addEventListener("click", resetGame);
+
+  console.log(possibleMoves);
 });

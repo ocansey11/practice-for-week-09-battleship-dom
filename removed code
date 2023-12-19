@@ -1,0 +1,23 @@
+// //function Make Hit. to add color effect to grid cells via classLists
+// function makeHit(row, col, comChecker) {
+//   if (comChecker) {
+//     if (gridCom[row][col] !== null) {
+//       return true;
+//     }
+//     return false;
+//   }
+
+//   if (grid[row][col] !== null) {
+//     return true;
+//   }
+//   return false;
+// }
+
+//RESET GAME
+// battlefield.innerHTML = "";
+// board = new Board();
+// grid = board.grid;
+// loadGame();
+// battlefield.addEventListener("click", extractCell);
+// noShipsLeft.innerText = `Number of Ships remaining: ${board.numRemaining}`;
+// alertBox.style.display = "none";
