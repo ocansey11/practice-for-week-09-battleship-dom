@@ -19,8 +19,8 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
   let battlefieldCom = document.querySelector(".battlefield-com");
   let gridCom = humanBoard.grid;
   let noShipsLeftCom = document.getElementById("noShipsLeft-com");
-  let startCom = document.querySelector("startCom");
-  let moveTracker = [];
+  let startCom = document.getElementById("startCom");
+  let movesLeft = 80;
   let possibleMoves = [];
   let turn = true;
 
@@ -77,22 +77,22 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
 
     let cellElement = document.getElementById(`${cellLoc}`);
 
-    if (comChecker === "+") {
-      if (gridCom[row][col] !== null) {
-        event.target.classList.add("makeHit");
-        cellElement.innerText = humanBoard.makeHit(row, col);
-        noShipsLeftCom.innerText = `Number of Ships remaining: ${humanBoard.numRemaining}`;
+    // if (comChecker === "+") {
+    //   if (gridCom[row][col] !== null) {
+    //     event.target.classList.add("makeHit");
+    //     cellElement.innerText = humanBoard.makeHit(row, col);
+    //     noShipsLeftCom.innerText = `Number of Ships remaining: ${humanBoard.numRemaining}`;
 
-        //Will have to change this part to Human wins
-        if (humanBoard.isGameOver()) {
-          alertBox.style.display = "block";
-          battlefieldCom.removeEventListener("click", extractCell);
-        }
-      } else {
-        event.target.classList.add("makeMiss");
-        cellElement.innerText = "ha!";
-      }
-    }
+    //     //Will have to change this part to Human wins
+    //     if (humanBoard.isGameOver()) {
+    //       alertBox.style.display = "block";
+    //       battlefieldCom.removeEventListener("click", extractCell);
+    //     }
+    //   } else {
+    //     event.target.classList.add("makeMiss");
+    //     cellElement.innerText = "ha!";
+    //   }
+    // }
 
     if (comChecker === undefined) {
       if (grid[row][col] !== null) {
@@ -112,9 +112,31 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
   }
 
   function computerMoves() {
-    let move = possibleMoves[Math.floor(Math.random() * 81)];
-    // let move = possibleMoves[moveId];
-    moveTracker.push(move);
+    let index = Math.floor(Math.random() * 81);
+    let move = possibleMoves[index];
+    possibleMoves.splice(index, 1);
+    movesLeft--;
+
+    //Play
+    let row = move[0];
+    let col = move[1];
+    let cellElement = document.getElementById(`${move[0]}${move[1]}+`);
+
+    console.log(cellElement);
+
+    if (gridCom[row][col] !== null) {
+      cellElement.classList.add("makeHit");
+      cellElement.innerText = humanBoard.makeHit(row, col);
+      noShipsLeftCom.innerText = `Number of Ships remaining: ${humanBoard.numRemaining}`;
+      //i have to create two alertboxes
+      if (humanBoard.isGameOver()) {
+        alertBox.style.display = "block";
+        battlefieldCom.removeEventListener("click", extractCell);
+      }
+    } else {
+      cellElement.classList.add("makeMiss");
+      cellElement.innerText = "ha!";
+    }
   }
 
   function resetGame() {
@@ -130,6 +152,7 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
   noShipsLeft.innerText = `Number of ships remaining: ${board.numRemaining}`;
   noShipsLeftCom.innerText = `Number of Ships remaining: ${humanBoard.numRemaining}`;
   resetBtn_gameover.addEventListener("click", resetGame);
+  startCom.addEventListener("click", computerMoves);
 
   console.log(possibleMoves);
 });
