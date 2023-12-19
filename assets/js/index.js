@@ -20,7 +20,6 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
   let gridCom = humanBoard.grid;
   let noShipsLeftCom = document.getElementById("noShipsLeft-com");
   let startCom = document.getElementById("startCom");
-  let movesLeft = 80;
   let possibleMoves = [];
   let turn = true;
 
@@ -109,20 +108,24 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
         cellElement.innerText = "ha!";
       }
     }
+
+    //remove the eventlistener until the computer makes their move
+    battlefield.removeEventListener("click", extractCell);
+    //put a timeout here to make it loook like the computer is thinking. it could be varying timeout.
+    setTimeout(() => {
+      computerMoves();
+    }, 1500);
   }
 
   function computerMoves() {
-    let index = Math.floor(Math.random() * 81);
+    let index = Math.floor(Math.random() * possibleMoves.length);
     let move = possibleMoves[index];
     possibleMoves.splice(index, 1);
-    movesLeft--;
 
     //Play
     let row = move[0];
     let col = move[1];
     let cellElement = document.getElementById(`${move[0]}${move[1]}+`);
-
-    console.log(cellElement);
 
     if (gridCom[row][col] !== null) {
       cellElement.classList.add("makeHit");
@@ -137,6 +140,8 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
       cellElement.classList.add("makeMiss");
       cellElement.innerText = "ha!";
     }
+
+    battlefield.addEventListener("click", extractCell);
   }
 
   function resetGame() {
