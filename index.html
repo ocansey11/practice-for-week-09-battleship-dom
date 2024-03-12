@@ -10,25 +10,22 @@
 
   <body>
     <h1>Battleship</h1>
+    <div class="menu">
+      <button id="startCom">Computer</button>
+      <button id="resetBtn">RESET</button>
+      <button id="start">Player1</button>
+      <button id="start">Multiple Players</button>
+    </div>
     <div class="container">
       <div class="computer-board">
         <span id="noShipsLeft-com"></span>
         <div class="battlefield-com"></div>
       </div>
 
-      <button id="startCom">Computer starts first</button>
-
-      <button id="start">Human starts first</button>
-
       <div class="human-board">
         <span id="noShipsLeft"></span>
-        <button id="resetBtn">RESET</button>
         <div class="battlefield"></div>
-
-        <div class="alertBox">
-          <h2>YOU WIN</h2>
-          <button class="resetBtn-gameOver">RESET</button>
-        </div>
+        <div class="alertBox"></div>
       </div>
     </div>
   </body>

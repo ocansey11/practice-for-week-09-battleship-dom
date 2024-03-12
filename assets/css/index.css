@@ -58,3 +58,13 @@ body {
 .reset {
   background-color: brown;
 }
+
+.draggable {
+  cursor: move;
+}
+
+svg {
+  position: absolute !important;
+  background-color: brown;
+  z-index: 2;
+}

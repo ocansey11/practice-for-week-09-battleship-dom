@@ -1,12 +1,11 @@
 import Board from "./board.js";
 import HumanBoard from "./human.js";
+// import { computerMoves } from "./computerMoves.js";
 
 let board = new Board(); // creates a new game board
 let humanBoard = new HumanBoard(); //creates a new game for human interactivity board
 
 window.addEventListener(`DOMContentLoaded`, (event) => {
-  //Declaring classes and Ids
-  //Com appended to anything means computer
   let battlefield = document.querySelector(".battlefield");
   let grid = board.grid;
   let noShipsLeft = document.getElementById("noShipsLeft");
@@ -21,7 +20,16 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
   let noShipsLeftCom = document.getElementById("noShipsLeft-com");
   let startCom = document.getElementById("startCom");
   let possibleMoves = [];
+
   let turn = true;
+
+  //Banners
+  const comWins = `<h2> COMPUTER WINS </h2> 
+                  <button class="resetBtn-gameOver">RESET</button>
+                  `;
+  const userWins = `<h2> YOU WIN </h2>
+                    <button class="resetBtn-gameOver">RESET</button>
+  `;
 
   //Function Load Game. to load and reset grid using values from board
   //Now we have to load the battlefieldCom (Humans board here too)
@@ -72,51 +80,43 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
     //battlefieldCom has 3 strings. the row the col and an extra + string. while battlefield has just row and col
     let row = cellLoc[0];
     let col = cellLoc[1];
-    let comChecker = cellLoc[2];
 
     let cellElement = document.getElementById(`${cellLoc}`);
 
-    // if (comChecker === "+") {
-    //   if (gridCom[row][col] !== null) {
-    //     event.target.classList.add("makeHit");
-    //     cellElement.innerText = humanBoard.makeHit(row, col);
-    //     noShipsLeftCom.innerText = `Number of Ships remaining: ${humanBoard.numRemaining}`;
+    if (grid[row][col] !== null) {
+      event.target.classList.add("makeHit");
+      cellElement.innerText = board.makeHit(row, col);
+      noShipsLeft.innerText = `Number of Ships remaining: ${board.numRemaining}`;
 
-    //     //Will have to change this part to Human wins
-    //     if (humanBoard.isGameOver()) {
-    //       alertBox.style.display = "block";
-    //       battlefieldCom.removeEventListener("click", extractCell);
-    //     }
-    //   } else {
-    //     event.target.classList.add("makeMiss");
-    //     cellElement.innerText = "ha!";
-    //   }
-    // }
-
-    if (comChecker === undefined) {
-      if (grid[row][col] !== null) {
-        event.target.classList.add("makeHit");
-        cellElement.innerText = board.makeHit(row, col);
-        noShipsLeft.innerText = `Number of Ships remaining: ${board.numRemaining}`;
-
-        if (board.isGameOver()) {
-          alertBox.style.display = "block";
-          battlefield.removeEventListener("click", extractCell);
-        }
-      } else {
-        event.target.classList.add("makeMiss");
-        cellElement.innerText = "ha!";
+      if (board.isGameOver()) {
+        alertBox.style.display = "block";
+        alertBox.innerHTML += comWins;
+        battlefield.removeEventListener("click", extractCell);
       }
+    } else {
+      event.target.classList.add("makeMiss");
+      cellElement.innerText = "ha!";
     }
 
+    //add or remove event listeners SECTION
     //remove the eventlistener until the computer makes their move
     battlefield.removeEventListener("click", extractCell);
+
     //put a timeout here to make it loook like the computer is thinking. it could be varying timeout.
     setTimeout(() => {
       computerMoves();
     }, 1500);
   }
 
+  function resetGame() {
+    location.reload();
+  }
+
+  //Calling the functions and eevent listeners
+  resetBtn.addEventListener("click", resetGame);
+  battlefield.addEventListener("click", extractCell);
+
+  // COMPUTER FUNCTIONALITY
   function computerMoves() {
     let index = Math.floor(Math.random() * possibleMoves.length);
     let move = possibleMoves[index];
@@ -134,6 +134,7 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
       //i have to create two alertboxes
       if (humanBoard.isGameOver()) {
         alertBox.style.display = "block";
+        alertBox.innerHTML += userWins;
         battlefieldCom.removeEventListener("click", extractCell);
       }
     } else {
@@ -141,23 +142,13 @@ window.addEventListener(`DOMContentLoaded`, (event) => {
       cellElement.innerText = "ha!";
     }
 
+    //add or remove event listeners
     battlefield.addEventListener("click", extractCell);
+    startCom.removeEventListener("click", computerMoves);
   }
-
-  function resetGame() {
-    location.reload();
-  }
-
-  //Calling the functions and eevent listeners
-  resetBtn.addEventListener("click", resetGame);
-  battlefield.addEventListener("click", extractCell);
-  // battlefieldCom.addEventListener("click", extractCell);
 
   loadGame();
   noShipsLeft.innerText = `Number of ships remaining: ${board.numRemaining}`;
   noShipsLeftCom.innerText = `Number of Ships remaining: ${humanBoard.numRemaining}`;
-  resetBtn_gameover.addEventListener("click", resetGame);
   startCom.addEventListener("click", computerMoves);
-
-  console.log(possibleMoves);
 });
